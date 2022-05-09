@@ -1,49 +1,54 @@
 import React, { useState, useEffect } from "react"
-import Books from "./Books"
+import Character from "./Character"
 import LoadingMask from "./LoadingMask";
-import Button from '@mui/material/Button';
-import Textfield from '@mui/material/TextField'
+import Subscription from "./Subscription";
+
+
 
 function App() {
 
   const[loading, setLoading] = useState(false)
-  const[books, setBooks] = useState([])
-  const[input, setInput] = useState("")
-  const[sort, setSort] = useState("desc")
+  const[character, setCharacter] = useState([])
+ 
 
-  async function fetchBooks(){
-    const response = await fetch("http://www.kingatest.com/v1/api/books")
+  async function fetchSeries(){
+    const response = await fetch("https://demoapi.com/api/series/howimetyourmother")
     const resJSON = await response.json()
 
     console.log(resJSON);
 
-    setBooks(resJSON)
+    setCharacter(resJSON)
     setLoading(false)
     
   }
 
   useEffect( () => {
     setLoading(true)
-    fetchBooks()
+    fetchSeries()
   }, [])
  
-  function sortBooks(){
-    setBooks([...books.sort((a,b) => sort === "desc" ? b.year-a.year : a.year - b.year)])
-    setSort(sort === "desc" ? "asc" : "desc")
-  }
+
 
    return (
-    <div className='books'>
-      {loading ? <LoadingMask /> : 
-      <>
-        <Textfield placeholder='Search within titles' value={input} onChange={ ({target}) => setInput(target.value) } />
-        <Button variant="contained" style={{height:50}} onClick={sortBooks}>Go</Button>
-        
-        {books.map(({title,author,year}) => 
-        title.toLowerCase().includes(input.toLowerCase()) && <Books key={title} title={title} author={author} year={year} />)}
-      </>
-      }
-    </div>
+  <main>
+    <h1>Series Api</h1>
+  
+      <div className='character'>
+        {loading ? <LoadingMask /> : 
+      
+        <>
+          {character.map(({name, details}) => 
+          <Character key={name} name={name} details={details} />)}
+        </>
+        }
+      </div>
+
+    <footer>
+        <Subscription />
+    </footer>
+      
+  </main>
+
   ); 
 }
 
