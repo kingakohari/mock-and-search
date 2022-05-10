@@ -5,3 +5,7 @@ body {
 App {
   font-family: arial;
 }
+
+.subscribe_hidden {
+  display: none;
+}
