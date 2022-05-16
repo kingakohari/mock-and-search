@@ -9,6 +9,7 @@ function App() {
 
   const[loading, setLoading] = useState(false)
   const[character, setCharacter] = useState([])
+  const[inputLoading, setInputLoading] = useState(false)
  
 
   async function fetchSeries(){
@@ -25,9 +26,10 @@ function App() {
   useEffect( () => {
     setLoading(true)
     fetchSeries()
+    setTimeout(() =>
+      setInputLoading(true), 10000) 
   }, [])
- 
-
+    
 
    return (
   <main>
@@ -44,7 +46,7 @@ function App() {
       </div>
 
     <footer>
-        <Subscription />
+      {inputLoading ? <Subscription /> : false}
     </footer>
       
   </main>

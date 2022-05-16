@@ -1,52 +1,63 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import LoadingMask from './LoadingMask'
 import Textfield from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 
 const Subscription = () => {
 
-    const [isActive, setActive] = useState("false")
+    const [valid, setValid] = useState(false)
     const [input, setInput] = useState("")
     const [loading, setLoading] = useState(false)
+    const [done, setDone] = useState(false)
+    const [hide, setHide] = useState(false)
+   
 
-    useEffect (() => {
-        setActive("false");
-        setTimeout(() => setActive("true"), 10000)
-    },[])
-
-
-    async function requestHandler(){
+    const handleInputChange = (e) => {
+        setInput(e.target.value)
+        input.includes('@') && input.includes('.') ? setValid(true) : setValid(false)
+    }
+ 
+    async function postSubscribeData() {
 
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: { 'email': 'what@user.wrote' }
+            body: JSON.stringify({ 'email': input })
         }
-
+    
         const response = await fetch("https://demoapi.com/api/series/newsletter", requestOptions)
         const resJSON = await response.json()
+        setLoading(false)
+        setDone(true)
+         setTimeout(() => 
+           setHide(true) , 5000) 
         console.log(resJSON);
-        console.log("Subscribed");
-        setLoading(false)    
+        console.log('Subscribed');
+
     }
 
-    useEffect (() => {
+    function requestHandler(e){
+        e.preventDefault() //form elemen belül kell
+        console.log('Button clicked')
         setLoading(true)
-        requestHandler()
-        setActive("true");
-        setTimeout(() => setActive("false"), 5000)
-      }, [])
+        postSubscribeData()
+    }
 
 
     return (
-    <div className={isActive ? "subscribe" : "subscribe_hidden"}>
-        <h2>Subscribe to our newsletter</h2>
-        {loading ? <LoadingMask /> :
+    <>
+        {hide ? null : 
+        
+        loading && !done ? <LoadingMask /> : 
+        done ? <h2>Subscribed</h2> :
         <form>
-            <Textfield placeholder="Email address" variant="filled" value={input} onChange={ ({target}) => setInput(target.value)} required />
-            <Button variant="contained" style={{height:50}} onClick={requestHandler}>Go</Button>
+            <h2>Subscribe to our newsletter</h2>
+            <Textfield placeholder="Email address" variant="filled" value={input} onChange={(e) => {handleInputChange(e)}} />
+            {valid ? 
+            <Button variant="contained" style={{height:50}} onClick={requestHandler}>Go</Button> 
+            : <Button variant="contained" style={{height:50}} disabled>Go</Button>}
         </form>}
-    </div>
+    </>
     
     )
         
